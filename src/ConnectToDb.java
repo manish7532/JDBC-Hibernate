@@ -9,11 +9,21 @@ public class ConnectToDb {
     static Connection con;
 
     public static Connection getConnection() throws ClassNotFoundException, SQLException {
-        if (con == null) {
+        if (con == null || con.isClosed()) { // Check if the connection is closed
             con = DriverManager.getConnection(url, username, password);
-            return con;
-        } else {
-            return con;
+        }
+        System.out.println("Connection Opened.");
+        return con;
+    }
+
+    public static void closeConnection() {
+        if (con != null) {
+            try {
+                con.close(); // Close the connection
+                con = null; // Reset the connection object
+            } catch (SQLException e) {
+                System.out.println("Error while closing connection" + e.getMessage());
+            }
         }
     }
 }
