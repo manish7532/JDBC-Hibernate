@@ -1,0 +1,71 @@
+-- Cleanup (Optional: uncomment if you want to start fresh)
+-- DROP TABLE IF EXISTS salary_history, project_assignments, projects, employees, departments;
+
+CREATE TABLE departments (
+    dept_id SERIAL PRIMARY KEY,
+    dept_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE employees (
+    emp_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    salary NUMERIC(10, 2),
+    hire_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dept_id INTEGER REFERENCES departments(dept_id) ON DELETE SET NULL
+);
+
+CREATE TABLE projects (
+    proj_id SERIAL PRIMARY KEY,
+    proj_name VARCHAR(100) NOT NULL,
+    start_date DATE,
+    budget NUMERIC(15, 2)
+);
+
+CREATE TABLE project_assignments (
+    emp_id INTEGER REFERENCES employees(emp_id) ON DELETE CASCADE,
+    proj_id INTEGER REFERENCES projects(proj_id) ON DELETE CASCADE,
+    role VARCHAR(50),
+    PRIMARY KEY (emp_id, proj_id)
+);
+
+CREATE TABLE salary_history (
+    history_id SERIAL PRIMARY KEY,
+    emp_id INTEGER REFERENCES employees(emp_id),
+    old_salary NUMERIC(10, 2),
+    new_salary NUMERIC(10, 2),
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+-- 1. Insert Departments
+INSERT INTO departments (dept_name) VALUES
+('Engineering'), ('Marketing'), ('HR'), ('Sales');
+
+-- 2. Insert Employees
+INSERT INTO employees (first_name, last_name, email, salary, dept_id) VALUES
+('Alice', 'Smith', 'alice@tech.com', 95000.00, 1),
+('Bob', 'Jones', 'bob@tech.com', 82000.00, 1),
+('Charlie', 'Davis', 'charlie@mkt.com', 65000.00, 2),
+('Diana', 'Prince', 'diana@hr.com', 75000.00, 3),
+('Eve', 'Wright', 'eve@sales.com', 88000.00, 4);
+
+-- 3. Insert Projects
+INSERT INTO projects (proj_name, start_date, budget) VALUES
+('Cloud Migration', '2026-01-10', 500000.00),
+('AI Chatbot', '2026-02-20', 250000.00),
+('Q3 Campaign', '2026-06-01', 75000.00);
+
+-- 4. Insert Project Assignments (Many-to-Many)
+INSERT INTO project_assignments (emp_id, proj_id, role) VALUES
+(1, 1, 'Architect'),
+(2, 1, 'Developer'),
+(1, 2, 'Project Lead'),
+(3, 3, 'Coordinator');
+
+-- 5. Insert Initial Salary History
+INSERT INTO salary_history (emp_id, old_salary, new_salary) VALUES
+(1, 90000.00, 95000.00),
+(2, 80000.00, 82000.00);

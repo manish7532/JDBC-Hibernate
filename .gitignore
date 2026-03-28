@@ -30,3 +30,4 @@ bin/
 
 .idea
 JDBC-Hibernate.iml
+postgresql-42.7.10.jar
